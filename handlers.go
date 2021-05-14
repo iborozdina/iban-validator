@@ -38,7 +38,7 @@ func validateIBAN(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// check if a specified country is supported by IBAN validator 
+	// check if a specified country is supported by IBAN validator
 	if _, ok := Countries[iban.CountryCode]; !ok {
 		returnResponse(w, &Response{
 			StatusCode: http.StatusNotFound,
@@ -46,7 +46,7 @@ func validateIBAN(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	
+
 	// check the format for specific country
 	if !iban.isValidCountryStructure() {
 		returnResponse(w, &Response{
