@@ -24,8 +24,12 @@ func (iban *IBAN) get() string {
 
 // Validate the Check Digits by reordering characters in IBAN, converting letters to digits and computing the reminder for mod 97
 func (iban *IBAN) isValidCheckSum() bool {
-	// reorder the characters of IBAN and convert IBAN to big integer (*big.Int) to further calculations
-	intIBAN := convertIbanStringToBigInt(reorderCharacters(iban))
+	// reorder the characters of IBAN
+	reorderedStr := reorderCharacters(iban)
+	// replace letters with digits
+	replacedStr := replaceLettersToDigits(reorderedStr)
+	// convert IBAN to big integer (*big.Int) to further calculations
+	intIBAN := convertIbanStringToBigInt(replacedStr)
 	if intIBAN == nil {
 		log.Println("Could not convert IBAN string to big int")
 		return false
@@ -51,27 +55,9 @@ func (iban *IBAN) isValidCountryFormat() bool {
 	return false
 }
 
-// Replace each letter in the string with two digits, thereby expanding the string, where A = 10, B = 11, ..., Z = 35 and convert to big integer
+// Replace letters with digits and convert to big integer
 func convertIbanStringToBigInt(iban string) *big.Int {
-	// replace letters to digits
-	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	var ibanAllNumbers string
-	var num string
-
-	for _, r := range iban {
-		if !unicode.IsDigit(r) {
-			for i, v := range charset {
-				if v == r {
-					num = strconv.Itoa(i + 10)
-					break
-				}
-			}
-		} else {
-			num = string(r)
-		}
-		ibanAllNumbers = ibanAllNumbers + num
-	}
-	log.Println("Replaced all letters in IBAN: " + ibanAllNumbers)
+	ibanAllNumbers := replaceLettersToDigits(iban)
 
 	// convert string to big integer
 	result, ok := new(big.Int).SetString(ibanAllNumbers, 10)
@@ -92,6 +78,29 @@ func isValidFormat(str, requiredFormat string) bool {
 // Move the four initial characters to the end of the string
 func reorderCharacters(iban *IBAN) string {
 	return iban.BBAN + iban.CountryCode + iban.CheckDigits
+}
+
+// Replace each letter in the string with two digits, thereby expanding the string, where A = 10, B = 11, ..., Z = 35
+func replaceLettersToDigits(str string) string {
+	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	var result string
+	var num string
+
+	for _, r := range str {
+		if !unicode.IsDigit(r) {
+			for i, v := range charset {
+				if v == r {
+					num = strconv.Itoa(i + 10)
+					break
+				}
+			}
+		} else {
+			num = string(r)
+		}
+		result = result + num
+	}
+	log.Println("Replaced all letters in IBAN: " + result)
+	return result
 }
 
 // Convert the string to IBAN structure: Country Code, Check Digits, BBAN
