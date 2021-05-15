@@ -9,7 +9,7 @@ import (
 	"unicode"
 )
 
-var ibanFormat = `^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$`
+var ibanCommonFormat = `^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$`
 
 type IBAN struct {
 	CountryCode string
@@ -27,29 +27,27 @@ func (iban *IBAN) isValidCheckSum() bool {
 	// reorder the characters of IBAN
 	reorderedStr := reorderCharacters(iban)
 	// replace letters with digits
-	replacedStr := replaceLettersToDigits(reorderedStr)
-	// convert IBAN to big integer (*big.Int) to further calculations
-	intIBAN := convertIbanStringToBigInt(replacedStr)
+	replacedLettersStr := replaceLettersToDigits(reorderedStr)
+	// convert IBAN to big integer (*big.Int) for further calculations
+	intIBAN := convertIbanStringToBigInt(replacedLettersStr)
 	if intIBAN == nil {
-		log.Println("Could not convert IBAN string to big int")
+		// can be changed to return internal error, it will be more relevant
+		log.Printf("Could not convert IBAN string to big int")
 		return false
 	}
 
 	// compute the remainder of IBAN(*big.Int) on division by 97 and check if reminder is equal to 1
 	reminder := new(big.Int).Mod(intIBAN, big.NewInt(97))
-	log.Println("Reminder for IBAN mod 97 is: " + reminder.String())
-	if reminder.Int64() == 1 {
-		return true
+	if reminder.Int64() != 1 {
+		return false
 	}
-
-	return false
+	return true
 }
 
 // Validate if BBAN of this IBAN corresponds to the specific country format and has the right length
 func (iban *IBAN) isValidCountryFormat() bool {
 	cc := iban.CountryCode
 	if len(iban.BBAN) == Countries[cc].BBANLength && isValidFormat(iban.BBAN, Countries[cc].BBANFormat) {
-		log.Println("IBAN corresponds the country format")
 		return true
 	}
 	return false
@@ -57,16 +55,13 @@ func (iban *IBAN) isValidCountryFormat() bool {
 
 // Replace letters with digits and convert to big integer
 func convertIbanStringToBigInt(iban string) *big.Int {
-	ibanAllNumbers := replaceLettersToDigits(iban)
-
-	// convert string to big integer
-	result, ok := new(big.Int).SetString(ibanAllNumbers, 10)
+	result, ok := new(big.Int).SetString(iban, 10)
 	if !ok {
-		log.Println("Could not convert IBAN to int")
+		// can be changed to return internal error, it will be more relevant
+		log.Printf("Could not convert IBAN to int")
 		return nil
 	}
-	log.Println("Converted IBAN to big integer: " + result.String())
-
+	
 	return result
 }
 
@@ -99,7 +94,6 @@ func replaceLettersToDigits(str string) string {
 		}
 		result = result + num
 	}
-	log.Println("Replaced all letters in IBAN: " + result)
 	return result
 }
 
@@ -109,8 +103,7 @@ func stringToIban(str string) *IBAN {
 	str = strings.ToUpper(strings.Replace(str, " ", "", -1))
 
 	// validate common format and return IBAN struct
-	if isValidFormat(str, ibanFormat) {
-		log.Println("IBAN corresponds the common format")
+	if isValidFormat(str, ibanCommonFormat) {
 		return &IBAN{
 			CountryCode: str[0:2],
 			CheckDigits: str[2:4],

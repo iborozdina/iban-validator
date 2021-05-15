@@ -54,22 +54,22 @@ func TestService_isValidCountryFormat(t *testing.T) {
 func TestService_isValidFormat(t *testing.T) {
 	Convey("valid common format", t, func() {
 		testIbanStr := "QA58DOHB00001234567890ABCDEFG"
-		actualRes := isValidFormat(testIbanStr, ibanFormat)
+		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
 		So(actualRes, ShouldEqual, true)
 	})
 	Convey("invalid country code", t, func() {
 		testIbanStr := "5558DOHB00001234567890ABCDEFG"
-		actualRes := isValidFormat(testIbanStr, ibanFormat)
+		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
 		So(actualRes, ShouldEqual, false)
 	})
 	Convey("invalid check digits", t, func() {
 		testIbanStr := "QAQADOHB00001234567890ABCDEFG"
-		actualRes := isValidFormat(testIbanStr, ibanFormat)
+		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
 		So(actualRes, ShouldEqual, false)
 	})
 	Convey("too short", t, func() {
 		testIbanStr := "QA58DOHB"
-		actualRes := isValidFormat(testIbanStr, ibanFormat)
+		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
 		So(actualRes, ShouldEqual, false)
 	})
 }
