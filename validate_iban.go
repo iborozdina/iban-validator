@@ -24,10 +24,10 @@ func validateIBAN(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// convert the requested string to IBAN struct
+	// convert the requested string to IBAN struct, if the string corresponds to the common IBAN format
 	iban := stringToIban(ibanParam)
 	if iban == nil {
-		returnResponse(w, http.StatusOK, &Response{Valid: false})
+		returnResponse(w, http.StatusBadRequest, &ErrResponse{Message: "No IBAN number was provided in request"})
 		return
 	}
 

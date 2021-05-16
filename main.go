@@ -11,7 +11,7 @@ import (
 const port = ":8080"
 
 func main() {
-	log.Println("Starting service...")
+	log.Printf("Starting service...")
 	r := mux.NewRouter()
 	r.HandleFunc("/validate/{iban}", validateIBAN).Methods("GET")
 	http.Handle("/", r)

@@ -17,19 +17,15 @@ type IBAN struct {
 	BBAN        string
 }
 
-// Get the full IBAN string
-func (iban *IBAN) get() string {
-	return iban.CountryCode + iban.CheckDigits + iban.BBAN
-}
-
-// Validate the Check Digits by reordering characters in IBAN, converting letters to digits and computing the reminder for mod 97
+// Validate the Check Digits by reordering characters in IBAN, converting letters to digits and computing the reminder for mod 97,
+// valid reminder for common validation algorithm should be 1
 func (iban *IBAN) isValidCheckSum() bool {
 	// reorder the characters of IBAN
 	reorderedStr := reorderCharacters(iban)
 	// replace letters with digits
 	replacedLettersStr := replaceLettersToDigits(reorderedStr)
 	// convert IBAN to big integer (*big.Int) for further calculations
-	intIBAN := convertIbanStringToBigInt(replacedLettersStr)
+	intIBAN := stringToBigInt(replacedLettersStr)
 	if intIBAN == nil {
 		// can be changed to return internal error, it will be more relevant
 		log.Printf("Could not convert IBAN string to big int")
@@ -51,18 +47,6 @@ func (iban *IBAN) isValidCountryFormat() bool {
 		return true
 	}
 	return false
-}
-
-// Replace letters with digits and convert to big integer
-func convertIbanStringToBigInt(iban string) *big.Int {
-	result, ok := new(big.Int).SetString(iban, 10)
-	if !ok {
-		// can be changed to return internal error, it will be more relevant
-		log.Printf("Could not convert IBAN to int")
-		return nil
-	}
-	
-	return result
 }
 
 // Validate the format of the string (str) according to provided regexp (requiredFormat)
@@ -94,6 +78,18 @@ func replaceLettersToDigits(str string) string {
 		}
 		result = result + num
 	}
+	return result
+}
+
+// Convert string to big integer
+func stringToBigInt(iban string) *big.Int {
+	result, ok := new(big.Int).SetString(iban, 10)
+	if !ok {
+		// can be changed to return internal error, it will be more relevant
+		log.Printf("Could not convert IBAN to int")
+		return nil
+	}
+
 	return result
 }
 
