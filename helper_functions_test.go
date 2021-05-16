@@ -6,16 +6,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestService_getIban(t *testing.T) {
-	Convey("get full IBAN string successfully", t, func() {
-		testIban := &IBAN{CountryCode: "SE", CheckDigits: "45", BBAN: "50000000058398257466"}
-		actualRes := testIban.get()
-		expectedRes := "SE4550000000058398257466"
-		So(actualRes, ShouldEqual, expectedRes)
-	})
-}
-
-func TestService_isValidCheckSum(t *testing.T) {
+func TestIsValidCheckSum(t *testing.T) {
 	Convey("valid check sum", t, func() {
 		testIban := &IBAN{CountryCode: "SE", CheckDigits: "45", BBAN: "50000000058398257466"}
 		actualRes := testIban.isValidCheckSum()
@@ -33,7 +24,7 @@ func TestService_isValidCheckSum(t *testing.T) {
 	})
 }
 
-func TestService_isValidCountryFormat(t *testing.T) {
+func TestIsValidCountryFormat(t *testing.T) {
 	Convey("valid country format", t, func() {
 		testIban := &IBAN{CountryCode: "SE", CheckDigits: "45", BBAN: "50000000058398257466"}
 		actualRes := testIban.isValidCountryFormat()
@@ -51,12 +42,7 @@ func TestService_isValidCountryFormat(t *testing.T) {
 	})
 }
 
-func TestService_isValidFormat(t *testing.T) {
-	Convey("valid common format", t, func() {
-		testIbanStr := "QA58DOHB00001234567890ABCDEFG"
-		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
-		So(actualRes, ShouldEqual, true)
-	})
+func TestIsValidFormat(t *testing.T) {
 	Convey("invalid country code", t, func() {
 		testIbanStr := "5558DOHB00001234567890ABCDEFG"
 		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
@@ -72,9 +58,14 @@ func TestService_isValidFormat(t *testing.T) {
 		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
 		So(actualRes, ShouldEqual, false)
 	})
+	Convey("valid common format", t, func() {
+		testIbanStr := "QA58DOHB00001234567890ABCDEFG"
+		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
+		So(actualRes, ShouldEqual, true)
+	})
 }
 
-func TestService_reorderCharacters(t *testing.T) {
+func TestReorderCharacters(t *testing.T) {
 	Convey("correct string", t, func() {
 		testIban := &IBAN{CountryCode: "SE", CheckDigits: "45", BBAN: "50000000058398257466"}
 		actualRes := reorderCharacters(testIban)
@@ -83,7 +74,7 @@ func TestService_reorderCharacters(t *testing.T) {
 	})
 }
 
-func TestService_replaceLettersToDigits(t *testing.T) {
+func TestReplaceLettersToDigits(t *testing.T) {
 	Convey("short string success", t, func() {
 		testStr := "ABZ"
 		actualRes := replaceLettersToDigits(testStr)
@@ -98,7 +89,7 @@ func TestService_replaceLettersToDigits(t *testing.T) {
 	})
 }
 
-func TestService_stringToIban(t *testing.T) {
+func TestStringToIban(t *testing.T) {
 	Convey("converted successfully", t, func() {
 		testIbanStr := "QA58DOHB00001234567890ABCDEFG"
 		actualRes := stringToIban(testIbanStr)
