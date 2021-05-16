@@ -10,17 +10,17 @@ func TestIsValidCheckSum(t *testing.T) {
 	Convey("valid check sum", t, func() {
 		testIban := &IBAN{CountryCode: "SE", CheckDigits: "45", BBAN: "50000000058398257466"}
 		actualRes := testIban.isValidCheckSum()
-		So(actualRes, ShouldEqual, true)
+		So(actualRes, ShouldBeTrue)
 	})
 	Convey("invalid check digits", t, func() {
 		testIban := &IBAN{CountryCode: "SE", CheckDigits: "50", BBAN: "50000000058398257466"}
 		actualRes := testIban.isValidCheckSum()
-		So(actualRes, ShouldEqual, false)
+		So(actualRes, ShouldBeFalse)
 	})
 	Convey("invalid reminder", t, func() {
 		testIban := &IBAN{CountryCode: "SE", CheckDigits: "45", BBAN: "50000000058398257468"}
 		actualRes := testIban.isValidCheckSum()
-		So(actualRes, ShouldEqual, false)
+		So(actualRes, ShouldBeFalse)
 	})
 }
 
@@ -28,17 +28,17 @@ func TestIsValidCountryFormat(t *testing.T) {
 	Convey("valid country format", t, func() {
 		testIban := &IBAN{CountryCode: "SE", CheckDigits: "45", BBAN: "50000000058398257466"}
 		actualRes := testIban.isValidCountryFormat()
-		So(actualRes, ShouldEqual, true)
+		So(actualRes, ShouldBeTrue)
 	})
 	Convey("invalid BBAN length", t, func() {
 		testIban := &IBAN{CountryCode: "SE", CheckDigits: "45", BBAN: "5000000005839825"}
 		actualRes := testIban.isValidCountryFormat()
-		So(actualRes, ShouldEqual, false)
+		So(actualRes, ShouldBeFalse)
 	})
 	Convey("invalid country format", t, func() {
 		testIban := &IBAN{CountryCode: "SE", CheckDigits: "45", BBAN: "5000000005839825TEST"}
 		actualRes := testIban.isValidCountryFormat()
-		So(actualRes, ShouldEqual, false)
+		So(actualRes, ShouldBeFalse)
 	})
 }
 
@@ -46,22 +46,22 @@ func TestIsValidFormat(t *testing.T) {
 	Convey("invalid country code", t, func() {
 		testIbanStr := "5558DOHB00001234567890ABCDEFG"
 		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
-		So(actualRes, ShouldEqual, false)
+		So(actualRes, ShouldBeFalse)
 	})
 	Convey("invalid check digits", t, func() {
 		testIbanStr := "QAQADOHB00001234567890ABCDEFG"
 		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
-		So(actualRes, ShouldEqual, false)
+		So(actualRes, ShouldBeFalse)
 	})
 	Convey("too short", t, func() {
 		testIbanStr := "QA58DOHB"
 		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
-		So(actualRes, ShouldEqual, false)
+		So(actualRes, ShouldBeFalse)
 	})
 	Convey("valid common format", t, func() {
 		testIbanStr := "QA58DOHB00001234567890ABCDEFG"
 		actualRes := isValidFormat(testIbanStr, ibanCommonFormat)
-		So(actualRes, ShouldEqual, true)
+		So(actualRes, ShouldBeTrue)
 	})
 }
 

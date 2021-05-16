@@ -44,11 +44,12 @@ func validateIBAN(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// validate the Check Digits
-	// NOT IMPLEMENTED: validate the National Check Digits (used within the BBAN)
 	if !iban.isValidCheckSum() {
 		returnResponse(w, http.StatusOK, &Response{Valid: false})
 		return
 	}
+
+	// todo: validate the National Check Digits (used within the BBAN)
 
 	// return successful response for valid IBAN
 	returnResponse(w, http.StatusOK, &Response{Valid: true})
