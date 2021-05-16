@@ -1,0 +1,7 @@
+version: "3"
+services:
+    api:
+        build: .
+        image: iban-validator:latest
+        ports:
+            - "8080:8080"

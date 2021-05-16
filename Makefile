@@ -6,3 +6,6 @@ test:
 
 run:
 	./bin/main
+
+docker:
+	docker build -t iban-validator:latest .
